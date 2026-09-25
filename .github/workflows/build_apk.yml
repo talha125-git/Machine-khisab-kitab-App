@@ -1,0 +1,70 @@
+name: Build and Release Android APK
+
+on:
+  # 1. Manual 1-click trigger from GitHub Actions whenever you are ready to generate the APK
+  workflow_dispatch:
+    inputs:
+      notes:
+        description: 'Optional build notes or version'
+        required: false
+        default: 'Latest daily build with newest changes'
+
+  # 2. Or trigger automatically when you push a version tag (e.g. git tag v1.0 && git push --tags)
+  push:
+    tags:
+      - 'v*'
+      - 'release*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Release APK
+        run: flutter build apk --release
+
+      - name: Upload APK as Workflow Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: machine-khisab-kitab-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Publish Direct APK to GitHub Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk"
+          tag: "latest"
+          name: "Latest Android APK (Build #${{ github.run_number }})"
+          body: |
+            ### 🚀 Machine Khisab Kitab App - Android Release
+            Generated on demand with all latest commits and changes.
+
+            **Direct Install:**
+            1. Tap **`app-release.apk`** below to download directly to your Android device.
+            2. Open the downloaded file to install or update the app.
+          allowUpdates: true
+          makeLatest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
