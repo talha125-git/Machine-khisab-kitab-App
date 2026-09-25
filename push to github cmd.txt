@@ -1,35 +1,6 @@
-# ================================================================
-# 1. NORMAL DAILY WORKFLOW (PUSH AS MANY TIMES AS YOU WANT)
-# ================================================================
-# You can push 10, 20, or 50 times a day freely without waiting
-# for APK builds:
-
 git add .
-git commit -m "feat: add automatic two-way offline-to-mongodb sync queue"
+git commit -m "docs: move APK generation instructions to a separate file"
 git push
 
 
 
-# ================================================================
-# 2. HOW TO GENERATE THE APK AT THE END OF THE DAY (WITH ALL CHANGES)
-# ================================================================
-#
-        METHOD 1 (Easiest - 1 Click on GitHub):
-#   1. Open: https://github.com/talha125-git/Machine-khisab-kitab-App/actions
-#   2. Click "Build and Release Android APK" on the left menu
-#   3. Click the green "Run workflow" button on the right
-#   4. In 2-3 minutes, your fresh APK with all today's changes is ready!
-#
-        METHOD 2 (From Terminal):
-#   Run this single command whenever you want to trigger an APK build:
-#   git tag -f release && git push -f origin release
-#
-# ================================================================
-        3. WHERE TO DOWNLOAD YOUR APK:
-# ================================================================
-# Permanent link that always downloads the latest compiled APK:
-# https://github.com/talha125-git/Machine-khisab-kitab-App/releases/download/latest/app-release.apk
-#
-         Or view all releases:
-# https://github.com/talha125-git/Machine-khisab-kitab-App/releases
-# ================================================================
