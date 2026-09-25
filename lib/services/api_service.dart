@@ -4,12 +4,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/kitab.dart';
 
 class ApiService {
-  static const String defaultBaseUrl = 'http://localhost:5000';
+  static const String defaultBaseUrl = 'https://machine-khisab-kitab.vercel.app';
   static const String _prefServerUrlKey = 'custom_backend_url';
 
   static Future<String> getBaseUrl() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_prefServerUrlKey) ?? defaultBaseUrl;
+    final custom = prefs.getString(_prefServerUrlKey);
+    // Automatically ignore any legacy localhost or loopback URLs from previous installs
+    if (custom != null &&
+        custom.isNotEmpty &&
+        !custom.contains('localhost') &&
+        !custom.contains('127.0.0.1') &&
+        !custom.contains('10.0.2.2')) {
+      return custom;
+    }
+    return defaultBaseUrl;
   }
 
   static Future<void> setBaseUrl(String url) async {
@@ -25,7 +34,7 @@ class ApiService {
     try {
       final baseUrl = await getBaseUrl();
       final res = await http.get(Uri.parse('$baseUrl/')).timeout(const Duration(seconds: 4));
-      return res.statusCode == 200;
+      return res.statusCode >= 200 && res.statusCode < 400;
     } catch (_) {
       return false;
     }

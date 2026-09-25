@@ -428,10 +428,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.cloud_done_rounded, size: 14, color: AppTheme.emeraldGreen.withValues(alpha: 0.7)),
+                      Icon(Icons.cloud_done_rounded, size: 14, color: AppTheme.emeraldGreen.withValues(alpha: 0.8)),
                       const SizedBox(width: 6),
                       Text(
-                        'Local-First & Cloud Ready',
+                        'MongoDB Atlas Cloud & Offline Ready',
                         style: TextStyle(
                           color: AppTheme.textSubtle.withValues(alpha: 0.8),
                           fontSize: 12,

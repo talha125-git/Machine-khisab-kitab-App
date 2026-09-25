@@ -40,17 +40,16 @@ class AuthService {
       return {'success': true, 'user': user, 'isOffline': false};
     }
 
-    // Auto-fallback: if server is unreachable, log in locally so app runs offline without error!
+    // Auto-fallback: if server is unreachable, allow offline login if already cached on this device
     if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
-      final rawName = email.split('@').first;
-      final name = rawName.isNotEmpty ? rawName[0].toUpperCase() + rawName.substring(1) : 'Talha';
-      final offlineUser = AppUser(
-        id: email.trim().toLowerCase(),
-        username: name,
-        email: email.trim().toLowerCase(),
-      );
-      await saveUser(offlineUser);
-      return {'success': true, 'user': offlineUser, 'isOffline': true};
+      final currentUser = await getCurrentUser();
+      if (currentUser != null && currentUser.email.toLowerCase() == email.trim().toLowerCase()) {
+        return {'success': true, 'user': currentUser, 'isOffline': true};
+      }
+      return {
+        'success': false,
+        'message': 'Cannot connect to server. Check your internet connection to sync your web account, or tap "⚡ Continue in Offline Mode" below.',
+      };
     }
 
     return result;
@@ -73,15 +72,11 @@ class AuthService {
       return {'success': true, 'user': user, 'isOffline': false};
     }
 
-    // Auto-fallback: if server is unreachable, create local user so app runs offline immediately!
     if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
-      final offlineUser = AppUser(
-        id: email.trim().toLowerCase(),
-        username: username.trim().isNotEmpty ? username.trim() : 'Talha',
-        email: email.trim().toLowerCase(),
-      );
-      await saveUser(offlineUser);
-      return {'success': true, 'user': offlineUser, 'isOffline': true};
+      return {
+        'success': false,
+        'message': 'Cannot connect to server to create account. Check internet connection, or tap "⚡ Continue in Offline Mode".',
+      };
     }
 
     return result;
