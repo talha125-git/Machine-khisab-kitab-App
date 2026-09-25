@@ -6,7 +6,6 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/create_kitab_dialog.dart';
 import '../widgets/app_footer.dart';
-import '../services/pdf_service.dart';
 import 'kitab_detail_screen.dart';
 import 'all_kitabs_screen.dart';
 import 'settings_screen.dart';
@@ -160,16 +159,6 @@ class _HomeScreenState extends State<HomeScreen> {
       case FooterTab.newKitab:
         _showCreateModal();
         break;
-      case FooterTab.pdfReport:
-        final activeKitab = _kitabs.where((k) => k.id == _activeKitabId).firstOrNull;
-        if (activeKitab != null) {
-          PdfService.generateAndShareKitabPDF(activeKitab);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No active kitab selected to export.')),
-          );
-        }
-        break;
       case FooterTab.settings:
         setState(() {
           _currentFooterTab = FooterTab.settings;
@@ -186,7 +175,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return 'Settings';
       case FooterTab.currentKitab:
       case FooterTab.newKitab:
-      case FooterTab.pdfReport:
         return widget.user.username.isNotEmpty ? widget.user.username : 'Khisab Kitab';
     }
   }
@@ -199,7 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return 'ترتیبات — App Preferences & Theme';
       case FooterTab.currentKitab:
       case FooterTab.newKitab:
-      case FooterTab.pdfReport:
         return 'Machine Number Data';
     }
   }
@@ -231,7 +218,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case FooterTab.currentKitab:
       case FooterTab.newKitab:
-      case FooterTab.pdfReport:
         return activeKitab != null
             ? KitabDetailScreen(
                 key: ValueKey(activeKitab.id),

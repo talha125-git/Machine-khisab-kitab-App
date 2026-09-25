@@ -5,7 +5,6 @@ enum FooterTab {
   currentKitab,
   allKitabs,
   newKitab,
-  pdfReport,
   settings,
 }
 
@@ -38,7 +37,7 @@ class AppFooter extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.5 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.06),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -49,51 +48,51 @@ class AppFooter extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               // 1. Current Kitab / Ledger
-              _buildNavItem(
-                context: context,
-                tab: FooterTab.currentKitab,
-                icon: Icons.menu_book_rounded,
-                activeIcon: Icons.menu_book,
-                label: 'Kitab',
-                isSelected: activeTab == FooterTab.currentKitab,
+              Expanded(
+                child: _buildNavItem(
+                  context: context,
+                  tab: FooterTab.currentKitab,
+                  icon: Icons.menu_book_outlined,
+                  activeIcon: Icons.menu_book_rounded,
+                  label: 'Kitab',
+                  isSelected: activeTab == FooterTab.currentKitab,
+                ),
               ),
 
               // 2. All Kitabs List
-              _buildNavItem(
-                context: context,
-                tab: FooterTab.allKitabs,
-                icon: Icons.auto_stories_outlined,
-                activeIcon: Icons.auto_stories_rounded,
-                label: 'All Kitabs',
-                badgeCount: kitabsCount,
-                isSelected: activeTab == FooterTab.allKitabs,
+              Expanded(
+                child: _buildNavItem(
+                  context: context,
+                  tab: FooterTab.allKitabs,
+                  icon: Icons.auto_stories_outlined,
+                  activeIcon: Icons.auto_stories_rounded,
+                  label: 'All Kitabs',
+                  badgeCount: kitabsCount,
+                  isSelected: activeTab == FooterTab.allKitabs,
+                ),
               ),
 
-              // 3. Center Action: + New Kitab
-              _buildCenterNewButton(),
-
-              // 4. PDF Report
-              _buildNavItem(
-                context: context,
-                tab: FooterTab.pdfReport,
-                icon: Icons.picture_as_pdf_outlined,
-                activeIcon: Icons.picture_as_pdf_rounded,
-                label: 'PDF Report',
-                isSelected: activeTab == FooterTab.pdfReport,
-                enabled: hasActiveKitab,
+              // 3. + New Kitab Quick Action
+              Expanded(
+                child: _buildNewKitabItem(
+                  context: context,
+                  isDark: isDark,
+                  onTap: () => onTabSelected(FooterTab.newKitab),
+                ),
               ),
 
-              // 5. Settings
-              _buildNavItem(
-                context: context,
-                tab: FooterTab.settings,
-                icon: Icons.settings_outlined,
-                activeIcon: Icons.settings_rounded,
-                label: 'Settings',
-                isSelected: activeTab == FooterTab.settings,
+              // 4. Settings
+              Expanded(
+                child: _buildNavItem(
+                  context: context,
+                  tab: FooterTab.settings,
+                  icon: Icons.settings_outlined,
+                  activeIcon: Icons.settings_rounded,
+                  label: 'Settings',
+                  isSelected: activeTab == FooterTab.settings,
+                ),
               ),
             ],
           ),
@@ -123,10 +122,10 @@ class AppFooter extends StatelessWidget {
             : (isDark ? AppTheme.textMuted : AppTheme.textDarkMuted);
 
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       onTap: enabled ? () => onTabSelected(tab) : null,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -135,12 +134,14 @@ class AppFooter extends StatelessWidget {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? AppTheme.primaryBlue.withValues(alpha: 0.18)
+                        ? (isDark
+                            ? AppTheme.primaryBlue.withValues(alpha: 0.22)
+                            : AppTheme.primaryBlue.withValues(alpha: 0.12))
                         : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     isSelected ? activeIcon : icon,
@@ -151,12 +152,21 @@ class AppFooter extends StatelessWidget {
                 if (badgeCount != null && badgeCount > 0)
                   Positioned(
                     top: -2,
-                    right: -6,
+                    right: 4,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue,
-                        borderRadius: BorderRadius.circular(8),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF3B82F6), Color(0xFF0EA5E9)],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       constraints: const BoxConstraints(minWidth: 16),
                       child: Text(
@@ -164,8 +174,9 @@ class AppFooter extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 9,
+                          fontSize: 9.5,
                           fontWeight: FontWeight.bold,
+                          height: 1.1,
                         ),
                       ),
                     ),
@@ -176,10 +187,13 @@ class AppFooter extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                fontSize: 10.5,
+                fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: color,
+                letterSpacing: 0.2,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -187,39 +201,53 @@ class AppFooter extends StatelessWidget {
     );
   }
 
-  Widget _buildCenterNewButton() {
+  Widget _buildNewKitabItem({
+    required BuildContext context,
+    required bool isDark,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: () => onTabSelected(FooterTab.newKitab),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF2563EB), Color(0xFF0284C7)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.4),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: const Row(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add_rounded, color: Colors.white, size: 20),
-            SizedBox(width: 4),
-            Text(
-              'New',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2563EB), Color(0xFF0EA5E9)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2563EB).withValues(alpha: 0.4),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
+              child: const Icon(
+                Icons.add_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              '+ New',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: isDark ? AppTheme.accentCyan : AppTheme.primaryBlue,
+                letterSpacing: 0.2,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

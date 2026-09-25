@@ -1,3 +1,3 @@
 git add .
-git commit -m "your update message"
+git commit -m "feat: add home screen, all kitabs screen, and app footer widget"
 git push

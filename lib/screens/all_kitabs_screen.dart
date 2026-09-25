@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/kitab.dart';
 import '../theme/app_theme.dart';
+import '../services/pdf_service.dart';
 
 class AllKitabsScreen extends StatefulWidget {
   final List<Kitab> kitabs;
@@ -317,6 +318,11 @@ class _AllKitabsScreenState extends State<AllKitabsScreen> {
                                   ),
                                 ),
 
+                              IconButton(
+                                icon: const Icon(Icons.picture_as_pdf_outlined, size: 18, color: AppTheme.accentCyan),
+                                tooltip: 'Export PDF',
+                                onPressed: () => PdfService.generateAndShareKitabPDF(k),
+                              ),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, size: 18, color: AppTheme.dangerRed),
                                 tooltip: 'Delete Kitab',
