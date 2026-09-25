@@ -25,11 +25,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isTesting = false;
   String? _testResult;
   bool _testSuccess = false;
+  bool _isSyncing = false;
+  int _pendingCount = 0;
+  String? _syncFeedback;
 
   @override
   void initState() {
     super.initState();
     _loadUrl();
+    _loadSyncStatus();
+  }
+
+  void _loadSyncStatus() async {
+    final count = await ApiService.getPendingSyncCount(widget.user.id);
+    if (mounted) {
+      setState(() {
+        _pendingCount = count;
+      });
+    }
+  }
+
+  void _handleManualSync() async {
+    setState(() {
+      _isSyncing = true;
+      _syncFeedback = null;
+    });
+
+    final res = await ApiService.syncWithMongoDB(widget.user.id);
+    if (mounted) {
+      final newCount = await ApiService.getPendingSyncCount(widget.user.id);
+      setState(() {
+        _isSyncing = false;
+        _pendingCount = newCount;
+        _syncFeedback = res['success'] == true
+            ? 'Synced ${res['syncedCount']} change(s) with MongoDB Atlas ✅'
+            : 'Could not sync: ${res['message']}';
+      });
+      widget.onRefresh();
+    }
   }
 
   void _loadUrl() async {
@@ -291,7 +324,100 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 16),
 
-            // 3. Backend Server Configuration
+            // 3. MongoDB Cloud Sync Card
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF131D33) : Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isDark ? const Color(0xFF243353) : const Color(0xFFCBD5E1),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.emeraldGreen.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.cloud_sync_rounded,
+                          color: AppTheme.emeraldGreen,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'MONGODB CLOUD SYNC',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.1,
+                                color: isDark ? AppTheme.textSubtle : AppTheme.textDarkSubtle,
+                              ),
+                            ),
+                            Text(
+                              _pendingCount > 0
+                                  ? '$_pendingCount offline change(s) waiting to sync'
+                                  : 'All offline data is synced with MongoDB Atlas',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: _pendingCount > 0 ? AppTheme.goldAmber : AppTheme.emeraldGreen,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _isSyncing ? null : _handleManualSync,
+                      icon: _isSyncing
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(Icons.sync_rounded, size: 18),
+                      label: Text(_isSyncing ? 'Syncing with MongoDB...' : 'Sync Now with MongoDB Atlas'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.emeraldGreen,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                  if (_syncFeedback != null) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      _syncFeedback!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: _syncFeedback!.contains('✅') ? AppTheme.emeraldGreen : AppTheme.dangerRed,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 4. Backend Server Configuration
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(

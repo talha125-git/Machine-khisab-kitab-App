@@ -60,4 +60,14 @@ class AuthService {
     }
     return result;
   }
+
+  static Future<AppUser> loginOffline({String? name}) async {
+    final user = AppUser(
+      id: 'local_user',
+      username: (name != null && name.trim().isNotEmpty) ? name.trim() : 'Talha (Offline)',
+      email: 'offline@khisab.app',
+    );
+    await saveUser(user);
+    return user;
+  }
 }

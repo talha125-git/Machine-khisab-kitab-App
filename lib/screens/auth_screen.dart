@@ -399,6 +399,29 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ],
                                 ),
                         ),
+                        const SizedBox(height: 12),
+
+                        // Offline Mode Button
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            final user = await AuthService.loginOffline(
+                              name: _usernameController.text.trim().isNotEmpty
+                                  ? _usernameController.text.trim()
+                                  : 'Talha',
+                            );
+                            widget.onLoginSuccess(user);
+                          },
+                          icon: const Icon(Icons.cloud_off_rounded, size: 16, color: AppTheme.accentCyan),
+                          label: const Text(
+                            '⚡ Continue in Offline Mode',
+                            style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.accentCyan),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: BorderSide(color: AppTheme.accentCyan.withValues(alpha: 0.4)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                        ),
                       ],
                     ),
                   ),
