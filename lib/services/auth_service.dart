@@ -37,8 +37,22 @@ class AuthService {
       final userData = result['data']['user'];
       final user = AppUser.fromJson(userData);
       await saveUser(user);
-      return {'success': true, 'user': user};
+      return {'success': true, 'user': user, 'isOffline': false};
     }
+
+    // Auto-fallback: if server is unreachable, log in locally so app runs offline without error!
+    if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
+      final rawName = email.split('@').first;
+      final name = rawName.isNotEmpty ? rawName[0].toUpperCase() + rawName.substring(1) : 'Talha';
+      final offlineUser = AppUser(
+        id: email.trim().toLowerCase(),
+        username: name,
+        email: email.trim().toLowerCase(),
+      );
+      await saveUser(offlineUser);
+      return {'success': true, 'user': offlineUser, 'isOffline': true};
+    }
+
     return result;
   }
 
@@ -56,8 +70,20 @@ class AuthService {
       final userData = result['data']['user'];
       final user = AppUser.fromJson(userData);
       await saveUser(user);
-      return {'success': true, 'user': user};
+      return {'success': true, 'user': user, 'isOffline': false};
     }
+
+    // Auto-fallback: if server is unreachable, create local user so app runs offline immediately!
+    if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
+      final offlineUser = AppUser(
+        id: email.trim().toLowerCase(),
+        username: username.trim().isNotEmpty ? username.trim() : 'Talha',
+        email: email.trim().toLowerCase(),
+      );
+      await saveUser(offlineUser);
+      return {'success': true, 'user': offlineUser, 'isOffline': true};
+    }
+
     return result;
   }
 

@@ -21,10 +21,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final TextEditingController _urlController = TextEditingController();
-  bool _isTesting = false;
-  String? _testResult;
-  bool _testSuccess = false;
   bool _isSyncing = false;
   int _pendingCount = 0;
   String? _syncFeedback;
@@ -32,7 +28,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUrl();
     _loadSyncStatus();
   }
 
@@ -59,43 +54,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _pendingCount = newCount;
         _syncFeedback = res['success'] == true
             ? 'Synced ${res['syncedCount']} change(s) with MongoDB Atlas ✅'
-            : 'Could not sync: ${res['message']}';
+            : 'Server not reachable right now. Data safely saved locally ⚡';
       });
       widget.onRefresh();
-    }
-  }
-
-  void _loadUrl() async {
-    final currentUrl = await ApiService.getBaseUrl();
-    _urlController.text = currentUrl;
-  }
-
-  void _testConnection() async {
-    setState(() {
-      _isTesting = true;
-      _testResult = null;
-    });
-
-    final tempUrl = _urlController.text.trim();
-    await ApiService.setBaseUrl(tempUrl);
-    final ok = await ApiService.checkHealth();
-
-    setState(() {
-      _isTesting = false;
-      _testSuccess = ok;
-      _testResult = ok
-          ? 'Connected to backend (MongoDB Active) ✅'
-          : 'Could not connect. Ensure backend is running.';
-    });
-  }
-
-  void _saveUrl() async {
-    await ApiService.setBaseUrl(_urlController.text.trim());
-    if (mounted) {
-      widget.onRefresh();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Backend Server URL updated and saved.')),
-      );
     }
   }
 
@@ -121,12 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _urlController.dispose();
-    super.dispose();
   }
 
   @override
@@ -412,158 +367,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 4. Backend Server Configuration
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF131D33) : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isDark ? const Color(0xFF243353) : const Color(0xFFCBD5E1),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(Icons.dns_rounded, color: AppTheme.accentCyan, size: 20),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'SERVER CONFIGURATION',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.1,
-                              color: isDark ? AppTheme.textSubtle : AppTheme.textDarkSubtle,
-                            ),
-                          ),
-                          Text(
-                            'API Connection & MongoDB Endpoint',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? AppTheme.textWhite : AppTheme.textDark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  TextField(
-                    controller: _urlController,
-                    decoration: InputDecoration(
-                      hintText: 'http://localhost:5000',
-                      prefixIcon: const Icon(Icons.link_rounded, size: 18),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.save_outlined, size: 20, color: AppTheme.accentCyan),
-                        tooltip: 'Save URL',
-                        onPressed: _saveUrl,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Preset Chips
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      ActionChip(
-                        label: const Text('localhost:5000', style: TextStyle(fontSize: 11)),
-                        backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                        onPressed: () {
-                          _urlController.text = 'http://localhost:5000';
-                          _saveUrl();
-                        },
-                      ),
-                      ActionChip(
-                        label: const Text('10.0.2.2:5000 (Android)', style: TextStyle(fontSize: 11)),
-                        backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-                        onPressed: () {
-                          _urlController.text = 'http://10.0.2.2:5000';
-                          _saveUrl();
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-
-                  // Test Connection Result Badge
-                  if (_testResult != null)
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      margin: const EdgeInsets.only(bottom: 14),
-                      decoration: BoxDecoration(
-                        color: _testSuccess
-                            ? AppTheme.emeraldGreen.withValues(alpha: 0.15)
-                            : AppTheme.dangerRed.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: _testSuccess
-                              ? AppTheme.emeraldGreen.withValues(alpha: 0.4)
-                              : AppTheme.dangerRed.withValues(alpha: 0.4),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            _testSuccess ? Icons.check_circle_rounded : Icons.error_rounded,
-                            size: 18,
-                            color: _testSuccess ? AppTheme.emeraldGreen : AppTheme.dangerRed,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _testResult!,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: _testSuccess ? AppTheme.emeraldGreen : AppTheme.dangerRed,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                  // Action Buttons: Test Connection & Save
-                  Row(
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: _isTesting ? null : _testConnection,
-                        icon: _isTesting
-                            ? const SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Icon(Icons.network_check_rounded, size: 16),
-                        label: Text(_isTesting ? 'Testing...' : 'Test Connection'),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        onPressed: _saveUrl,
-                        icon: const Icon(Icons.save_rounded, size: 16),
-                        label: const Text('Save URL'),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../models/user.dart';
 import '../theme/app_theme.dart';
-import '../widgets/server_settings_dialog.dart';
 
 class AuthScreen extends StatefulWidget {
   final Function(AppUser user) onLoginSuccess;
@@ -426,20 +425,20 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Bottom config: Server settings button
-                  TextButton.icon(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => const ServerSettingsDialog(),
-                      );
-                    },
-                    icon: const Icon(Icons.settings_ethernet_rounded, size: 16, color: AppTheme.textSubtle),
-                    label: const Text(
-                      'Configure Backend Server URL',
-                      style: TextStyle(color: AppTheme.textSubtle, fontSize: 12),
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.cloud_done_rounded, size: 14, color: AppTheme.emeraldGreen.withValues(alpha: 0.7)),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Local-First & Cloud Ready',
+                        style: TextStyle(
+                          color: AppTheme.textSubtle.withValues(alpha: 0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
