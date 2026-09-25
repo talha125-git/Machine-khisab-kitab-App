@@ -1,0 +1,135 @@
+================================================================================
+          MACHINE KHISAB KITAB APP - COMPLETE GUIDE & WALKTHROUGH
+================================================================================
+
+PROJECT LOCATION:
+- Flutter App:  D:\Apps\Projects\machine war data app\machine_khisab_kitab_app
+- Web Project:  D:\Apps\Projects\Machine war data
+
+--------------------------------------------------------------------------------
+1. OVERVIEW & WHAT WAS DONE
+--------------------------------------------------------------------------------
+We inspected the existing web application at "D:\Apps\Projects\Machine war data"
+and engineered a matching, high-performance Flutter application with:
+  • Full data parity with the web app (shares the exact same MongoDB database
+    and Express API backend).
+  • Premium modern UI/UX with dark ledger styling, Google Fonts (Outfit),
+    vibrant stat badges, and smooth micro-animations.
+  • Exact feature-for-feature equivalence with the web application, plus
+    mobile & desktop responsiveness.
+
+--------------------------------------------------------------------------------
+2. DATA PARITY & BACKEND CONNECTION
+--------------------------------------------------------------------------------
+How the app connects to the same data as the web:
+  1. Backend Server:
+     The web app's Express backend runs on port 5000:
+     D:\Apps\Projects\Machine war data\backend\server.js
+     Connected to MongoDB Atlas:
+     mongodb+srv://abutalhaa844_db_user:...@cluster0.hj1igey.mongodb.net/machine_war_data
+
+  2. Authentication Parity:
+     • POST /api/auth/login
+     • POST /api/auth/signup
+     When you log in with your existing account (e.g. abutalhaa844@gmail.com),
+     the app receives the exact same user ID and credentials.
+
+  3. Kitab Data Parity:
+     • GET    /api/kitabs      (requires 'x-user-id' header)
+     • GET    /api/kitabs/:id  (requires 'x-user-id' header)
+     • POST   /api/kitabs      (creates new 15-day cycle)
+     • PUT    /api/kitabs/:id  (updates day records and summary)
+     • DELETE /api/kitabs/:id  (deletes kitab)
+
+  4. Local Session Persistence:
+     The app uses SharedPreferences (analogous to the web app's localStorage)
+     to store the user session ('khisab_user') and custom server URL settings.
+
+--------------------------------------------------------------------------------
+3. WHAT WAS BUILT (CODEBASE STRUCTURE)
+--------------------------------------------------------------------------------
+In "machine_khisab_kitab_app":
+
+  lib/
+  ├── models/
+  │   ├── user.dart             -> AppUser model (id, username, email)
+  │   └── kitab.dart            -> DayEntry, Kitab, & KitabStats models
+  │                                (15-day calculations, PKR format, Friday check)
+  ├── services/
+  │   ├── api_service.dart      -> REST API client for Auth and Kitabs with
+  │   │                            configurable Base URL and health checking
+  │   ├── auth_service.dart     -> Session storage, login, signup, logout
+  │   └── pdf_service.dart      -> PDF report generation and native sharing/printing
+  ├── theme/
+  │   └── app_theme.dart        -> Deep slate/navy dark ledger theme with emerald,
+  │                                gold (Jummah), and sky-blue accents
+  ├── widgets/
+  │   ├── app_footer.dart       -> Sleek bottom navigation bar (Kitab, All Kitabs, + New, PDF, Settings)
+  │   ├── day_card.dart         -> Interactive day card with inline editor, notes,
+  │   │                            Friday Jummah 🕌 badge, and quick empty action
+  │   ├── summary_card.dart     -> Summary header with eye toggle (show/hide),
+  │   │                            4 stat cards, and animated progress bar
+  │   ├── completion_panel.dart -> Spend, Hand Over, and I Have money boxes,
+  │   │                            trophy banner, and read/edit mode toggles
+  │   ├── create_kitab_dialog.dart -> Start date picker with 15-day range preview
+  │   └── server_settings_dialog.dart -> Change/test backend URL on the fly
+  ├── screens/
+  │   ├── auth_screen.dart      -> Login & Signup screen with ledger aesthetics
+  │   ├── home_screen.dart      -> Main view with persistent footer and smooth page navigation
+  │   ├── kitab_detail_screen.dart -> Active kitab screen with Today Enter, PDF, and day grid
+  │   ├── all_kitabs_screen.dart -> Full page for browsing, searching, and switching all kitabs
+  │   └── settings_screen.dart   -> Full page for Dark / Light (Web Bluish) theme switch,
+  │                                   backend server settings, profile, and logout
+  └── main.dart                 -> Dynamic ThemeMode provider (Dark default), auth loader
+
+--------------------------------------------------------------------------------
+4. KEY UI/UX FEATURES IMPLEMENTED
+--------------------------------------------------------------------------------
+  ✓ 15-Day Cycle Tracking: Automatically generates Day 1 to Day 15 based on start date.
+  ✓ Friday Highlight (Jummah 🕌): Fridays automatically receive a gold amber
+    accent and badge, mirroring the cultural highlight from the web ledger.
+  ✓ Summary Panel & Privacy Toggle: An eye icon toggles sensitive PKR amounts
+    between visible and hidden (•••••••).
+  ✓ "Today Enter" Button: Automatically reveals and scrolls to the next entry day.
+  ✓ "Delete Empty Days": Collapses unused rows back to only the recorded days.
+  ✓ Completed Kitab Finalization:
+      • Three bottom summary boxes: Spend, Hand Over, and I Have.
+      • "Edit Page" button: Allows editing even after completion if corrections are needed.
+  ✓ PDF Reports: Generates beautiful PDF reports matching the web format with
+    table layout, day details, and formatted PKR totals.
+  ✓ Server Configuration: Tap the settings icon to connect to localhost:5000,
+    your local network IP (e.g., http://192.168.1.10:5000 for mobile testing),
+    or any deployed server URL.
+
+--------------------------------------------------------------------------------
+5. HOW TO RUN THE SYSTEM
+--------------------------------------------------------------------------------
+Step 1: Start the Backend Server
+  Open a terminal in:
+  D:\Apps\Projects\Machine war data\backend
+  And run:
+    node server.js
+  You will see:
+    ✅ Connected to MongoDB
+    🚀 Server running on http://localhost:5000
+
+Step 2: Run the Flutter App
+  Open a terminal in:
+  D:\Apps\Projects\machine war data app\machine_khisab_kitab_app
+  And run:
+    flutter run
+
+  You can run it on:
+  • Windows Desktop: flutter run -d windows
+  • Chrome Web:      flutter run -d chrome
+  • Android:         flutter run -d <device-id>
+
+Step 3: Login with Existing Account
+  Use your existing web credentials:
+  Email:    abutalhaa844@gmail.com
+  Password: [Your Password]
+
+  All your existing kitabs (Kitab #1, #2, #3, #4) and all day income entries
+  will load instantly! Any changes made in the app will update the database
+  and appear identically on the web.
+================================================================================

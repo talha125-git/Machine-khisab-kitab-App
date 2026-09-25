@@ -1,0 +1,24 @@
+# ================================================================
+# HOW TO PUSH TO YOUR NEW GITHUB REPOSITORY
+# ================================================================
+#
+# Replace YOUR_NEW_REPO_URL with your new GitHub repo URL
+# Example: https://github.com/talha125-git/YOUR_NEW_REPO_NAME.git
+#
+# Run these commands in PowerShell or Terminal:
+
+git init
+git add .
+git commit -m "Initial commit - Khisab Kitab Flutter App"
+git branch -M main
+git remote add origin YOUR_NEW_REPO_URL
+git push -u origin main
+
+# ================================================================
+# NOTE FOR FUTURE COMMITS:
+# ================================================================
+# After the first push, anytime you want to save changes to GitHub:
+#   git add .
+#   git commit -m "your update message"
+#   git push
+# ================================================================
