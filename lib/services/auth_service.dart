@@ -37,21 +37,8 @@ class AuthService {
       final userData = result['data']['user'];
       final user = AppUser.fromJson(userData);
       await saveUser(user);
-      return {'success': true, 'user': user, 'isOffline': false};
+      return {'success': true, 'user': user};
     }
-
-    // Auto-fallback: if server is unreachable, allow offline login if already cached on this device
-    if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
-      final currentUser = await getCurrentUser();
-      if (currentUser != null && currentUser.email.toLowerCase() == email.trim().toLowerCase()) {
-        return {'success': true, 'user': currentUser, 'isOffline': true};
-      }
-      return {
-        'success': false,
-        'message': 'Cannot connect to server. Check your internet connection to sync your web account, or tap "⚡ Continue in Offline Mode" below.',
-      };
-    }
-
     return result;
   }
 
@@ -69,26 +56,8 @@ class AuthService {
       final userData = result['data']['user'];
       final user = AppUser.fromJson(userData);
       await saveUser(user);
-      return {'success': true, 'user': user, 'isOffline': false};
+      return {'success': true, 'user': user};
     }
-
-    if (result['message'] != null && result['message'].toString().contains('Cannot reach server')) {
-      return {
-        'success': false,
-        'message': 'Cannot connect to server to create account. Check internet connection, or tap "⚡ Continue in Offline Mode".',
-      };
-    }
-
     return result;
-  }
-
-  static Future<AppUser> loginOffline({String? name}) async {
-    final user = AppUser(
-      id: 'local_user',
-      username: (name != null && name.trim().isNotEmpty) ? name.trim() : 'Talha (Offline)',
-      email: 'offline@khisab.app',
-    );
-    await saveUser(user);
-    return user;
   }
 }

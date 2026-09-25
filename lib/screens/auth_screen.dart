@@ -141,10 +141,17 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.menu_book_rounded,
-                      color: AppTheme.accentCyan,
-                      size: 38,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.asset(
+                        'assets/icon/app_icon.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (ctx, err, stack) => const Icon(
+                          Icons.menu_book_rounded,
+                          color: AppTheme.accentCyan,
+                          size: 38,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -398,29 +405,6 @@ class _AuthScreenState extends State<AuthScreen> {
                                   ],
                                 ),
                         ),
-                        const SizedBox(height: 12),
-
-                        // Offline Mode Button
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            final user = await AuthService.loginOffline(
-                              name: _usernameController.text.trim().isNotEmpty
-                                  ? _usernameController.text.trim()
-                                  : 'Talha',
-                            );
-                            widget.onLoginSuccess(user);
-                          },
-                          icon: const Icon(Icons.cloud_off_rounded, size: 16, color: AppTheme.accentCyan),
-                          label: const Text(
-                            '⚡ Continue in Offline Mode',
-                            style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.accentCyan),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            side: BorderSide(color: AppTheme.accentCyan.withValues(alpha: 0.4)),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -431,7 +415,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       Icon(Icons.cloud_done_rounded, size: 14, color: AppTheme.emeraldGreen.withValues(alpha: 0.8)),
                       const SizedBox(width: 6),
                       Text(
-                        'MongoDB Atlas Cloud & Offline Ready',
+                        'Connected to MongoDB Atlas Cloud',
                         style: TextStyle(
                           color: AppTheme.textSubtle.withValues(alpha: 0.8),
                           fontSize: 12,

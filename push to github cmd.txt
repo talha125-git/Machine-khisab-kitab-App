@@ -1,6 +1,3 @@
 git add .
-git commit -m "docs: move APK generation instructions to a separate file"
-git push
-
-
-
+git commit -m "feat: set custom MKK launcher icon for APK and in-app branding"
+git push origin main
